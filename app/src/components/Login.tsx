@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { signUpWithInvite } from '@/lib/auth-actions';
 import { Mail, Lock, UserPlus, LogIn, Loader2, Key, User } from 'lucide-react';
 
 export const Login = () => {
@@ -26,36 +27,22 @@ export const Login = () => {
                     throw new Error('表示名を入力してください。');
                 }
 
-                // 招待コードのチェック
-                const masterKey = process.env.NEXT_PUBLIC_INVITE_KEY;
-                if (inviteKey !== masterKey) {
-                    throw new Error('招待コードが正しくありません。');
+                // 招待コードのチェックはサーバーサイドで行うため、ここでは入力確認のみ
+                if (!inviteKey.trim()) {
+                    throw new Error('招待コードを入力してください。');
                 }
 
-                const { data, error } = await supabase.auth.signUp({
+                const result = await signUpWithInvite({
                     email,
                     password,
-                    options: {
-                        data: { display_name: displayName }
-                    }
+                    displayName,
+                    inviteKey
                 });
-                console.log('SignUp Response:', { data, error });
-                if (error) throw error;
+                console.log('SignUp Response:', result);
 
-                if (data.user) {
-                    // プロフィールテーブルに作成
-                    const { error: profileError } = await supabase
-                        .from('profiles')
-                        .insert({
-                            id: data.user.id,
-                            display_name: displayName
-                        });
-
-                    if (profileError) {
-                        console.error('Profile Creation Error:', profileError);
-                    }
-
-                    if (data.session) {
+                if (result.user) {
+                    if (result.session) {
+                        await supabase.auth.setSession(result.session);
                         setMessage({ type: 'success', text: 'アカウント作成に成功しました。' });
                     } else {
                         setMessage({ type: 'success', text: '確認メールを送信しました。' });

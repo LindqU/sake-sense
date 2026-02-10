@@ -23,7 +23,7 @@ interface EntryViewProps {
     resetForm: () => void;
     isLoggedIn: boolean;
     onLoginClick: () => void;
-    isEditable: boolean;
+    isEditable?: boolean;
 }
 
 export const EntryView = ({
