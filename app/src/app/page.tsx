@@ -15,6 +15,7 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [view, setView] = useState<'entry' | 'history'>('entry');
+  const [showLogin, setShowLogin] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
 
   // 認証状態の監視
@@ -26,6 +27,7 @@ export default function App() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: string, session: Session | null) => {
       setSession(session);
+      if (session) setShowLogin(false);
     });
 
     return () => subscription.unsubscribe();
@@ -33,14 +35,13 @@ export default function App() {
 
   // 履歴の取得
   const loadHistory = useCallback(async () => {
-    if (!session) return;
     try {
       const logs = await fetchAllLatestLogs();
       setHistory(logs);
     } catch (e) {
       console.error('履歴取得失敗:', e);
     }
-  }, [session]);
+  }, []);
 
   const onSaveSuccess = useCallback(() => {
     loadHistory();
@@ -50,8 +51,8 @@ export default function App() {
   const form = useTastingForm(onSaveSuccess);
 
   useEffect(() => {
-    if (view === 'history' && session) loadHistory();
-  }, [view, loadHistory, session]);
+    loadHistory();
+  }, [loadHistory]);
 
   const toggleView = () => {
     setView(prev => prev === 'entry' ? 'history' : 'entry');
@@ -74,8 +75,18 @@ export default function App() {
     );
   }
 
-  if (!session) {
-    return <Login />;
+  if (showLogin && !session) {
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setShowLogin(false)}
+          className="absolute top-4 left-4 z-50 p-2 text-slate-500 hover:text-slate-800 transition-colors"
+        >
+          ← 戻る
+        </button>
+        <Login />
+      </div>
+    );
   }
 
   return (
@@ -84,11 +95,15 @@ export default function App() {
         view={view}
         onToggleView={toggleView}
         onLogout={handleLogout}
+        isLoggedIn={!!session}
+        onLoginClick={() => setShowLogin(true)}
       />
 
       {view === 'entry' ? (
         <EntryView
           {...form}
+          isLoggedIn={!!session}
+          onLoginClick={() => setShowLogin(true)}
         />
       ) : (
         <HistoryView

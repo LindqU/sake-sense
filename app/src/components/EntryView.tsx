@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageSquareText, Save, CheckCircle2, Wine, Factory } from 'lucide-react';
+import { MessageSquareText, Save, CheckCircle2, Wine, Factory, LogIn } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Textarea } from './ui/Textarea';
@@ -21,6 +21,8 @@ interface EntryViewProps {
     isSaved: boolean;
     handleSave: () => void;
     resetForm: () => void;
+    isLoggedIn: boolean;
+    onLoginClick: () => void;
 }
 
 export const EntryView = ({
@@ -32,7 +34,9 @@ export const EntryView = ({
     isLoading,
     isSaved,
     handleSave,
-    resetForm
+    resetForm,
+    isLoggedIn,
+    onLoginClick
 }: EntryViewProps) => {
     return (
         <main className="max-w-md mx-auto p-4 space-y-8 pb-32">
@@ -73,16 +77,28 @@ export const EntryView = ({
                 <Button variant="outline" onClick={resetForm} className="flex-1 h-14 rounded-2xl border-slate-200">
                     Clear
                 </Button>
-                <Button
-                    onClick={handleSave}
-                    disabled={isLoading || !sakeName}
-                    variant={isSaved ? "success" : "primary"}
-                    className="flex-[2] h-14 rounded-2xl shadow-lg shadow-indigo-100"
-                >
-                    {isSaved ? <CheckCircle2 className="w-5 h-5" /> : <Save className="w-5 h-5" />}
-                    {isSaved ? 'Saved!' : 'Record Tasting'}
-                </Button>
+                {isLoggedIn ? (
+                    <Button
+                        onClick={handleSave}
+                        disabled={isLoading || !sakeName}
+                        variant={isSaved ? "success" : "primary"}
+                        className="flex-[2] h-14 rounded-2xl shadow-lg shadow-indigo-100"
+                    >
+                        {isSaved ? <CheckCircle2 className="w-5 h-5" /> : <Save className="w-5 h-5" />}
+                        {isSaved ? 'Saved!' : 'Record Tasting'}
+                    </Button>
+                ) : (
+                    <Button
+                        onClick={onLoginClick}
+                        variant="primary"
+                        className="flex-[2] h-14 rounded-2xl shadow-lg shadow-indigo-100 bg-indigo-600 hover:bg-indigo-700"
+                    >
+                        <LogIn className="w-5 h-5" />
+                        ログインして記録する
+                    </Button>
+                )}
             </footer>
         </main>
     );
 };
+

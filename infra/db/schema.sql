@@ -41,20 +41,25 @@ BEGIN
     DROP POLICY IF EXISTS "Users can select their own events" ON tasting_events;
     DROP POLICY IF EXISTS "Users can update their own events" ON tasting_events;
     DROP POLICY IF EXISTS "Users can only see their own events" ON tasting_events;
+    DROP POLICY IF EXISTS "Allow public read access" ON tasting_events;
+    DROP POLICY IF EXISTS "Allow authenticated insert" ON tasting_events;
+    DROP POLICY IF EXISTS "Allow individual update and delete" ON tasting_events;
 END $$;
 
--- データの挿入（INSERT）用ポリシー
-CREATE POLICY "Users can insert their own events" ON tasting_events
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- SELECTポリシー: 誰でも閲覧可能（オープン閲覧）
+CREATE POLICY "Allow public read access"
+    ON tasting_events FOR SELECT USING (true);
 
--- データの参照（SELECT）用ポリシー
-CREATE POLICY "Users can select their own events" ON tasting_events
-    FOR SELECT USING (auth.uid() = user_id);
+-- INSERTポリシー: 認証済みユーザーのみ、かつ自分のUserIDとしてのみ保存可能
+CREATE POLICY "Allow authenticated insert"
+    ON tasting_events FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 
--- データの更新（UPDATE）用ポリシー
-CREATE POLICY "Users can update their own events" ON tasting_events
-    FOR UPDATE USING (auth.uid() = user_id);
+-- UPDATE/DELETEポリシー: 作成者本人のみが変更可能
+CREATE POLICY "Allow individual update and delete"
+    ON tasting_events FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
--- 5. 権限設定 (Viewに対する権限付与)
-GRANT SELECT ON latest_tasting_logs TO authenticated;
-GRANT SELECT ON latest_tasting_logs TO anon;
+-- 5. 権限設定 (テーブルおよびViewに対する権限付与)
+GRANT SELECT ON tasting_events TO anon, authenticated;
+GRANT SELECT ON latest_tasting_logs TO anon, authenticated;
+GRANT INSERT, UPDATE ON tasting_events TO authenticated;
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
