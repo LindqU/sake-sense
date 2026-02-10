@@ -48,7 +48,9 @@ export async function fetchAllLatestLogs() {
         aggregate_id: item.aggregate_id,
         content: item.payload as TastingContent,
         version: item.version,
-        created_at: item.created_at
+        created_at: item.created_at,
+        user_id: item.user_id,
+        author_name: item.author_name
     }));
 }
 

@@ -17,6 +17,7 @@ export default function App() {
   const [view, setView] = useState<'entry' | 'history'>('entry');
   const [showLogin, setShowLogin] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
+  const [selectedLogUserId, setSelectedLogUserId] = useState<string | null>(null);
 
   // 認証状態の監視
   useEffect(() => {
@@ -55,11 +56,19 @@ export default function App() {
   }, [loadHistory]);
 
   const toggleView = () => {
-    setView(prev => prev === 'entry' ? 'history' : 'entry');
+    if (view === 'entry') {
+      setView('history');
+    } else {
+      // New Log
+      form.resetForm();
+      setSelectedLogUserId(null);
+      setView('entry');
+    }
   };
 
   const viewDetail = (log: any) => {
     form.loadFromLog(log);
+    setSelectedLogUserId(log.user_id);
     setView('entry');
   };
 
@@ -89,6 +98,11 @@ export default function App() {
     );
   }
 
+  // 編集可能かどうかの判定: 
+  // 1. 新規作成時 (selectedLogUserId が null) 
+  // 2. 作成者本人である時 (session.user.id === selectedLogUserId)
+  const isEditable = !selectedLogUserId || (session?.user?.id === selectedLogUserId);
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-24">
       <Header
@@ -104,6 +118,7 @@ export default function App() {
           {...form}
           isLoggedIn={!!session}
           onLoginClick={() => setShowLogin(true)}
+          isEditable={isEditable}
         />
       ) : (
         <HistoryView

@@ -4,12 +4,13 @@ import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Mail, Lock, UserPlus, LogIn, Loader2, Key } from 'lucide-react';
+import { Mail, Lock, UserPlus, LogIn, Loader2, Key, User } from 'lucide-react';
 
 export const Login = () => {
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [displayName, setDisplayName] = useState('');
     const [inviteKey, setInviteKey] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
@@ -21,6 +22,10 @@ export const Login = () => {
 
         try {
             if (isSignUp) {
+                if (!displayName.trim()) {
+                    throw new Error('表示名を入力してください。');
+                }
+
                 // 招待コードのチェック
                 const masterKey = process.env.NEXT_PUBLIC_INVITE_KEY;
                 if (inviteKey !== masterKey) {
@@ -30,14 +35,31 @@ export const Login = () => {
                 const { data, error } = await supabase.auth.signUp({
                     email,
                     password,
+                    options: {
+                        data: { display_name: displayName }
+                    }
                 });
                 console.log('SignUp Response:', { data, error });
                 if (error) throw error;
 
-                if (data.session) {
-                    setMessage({ type: 'success', text: 'アカウント作成に成功しました。' });
-                } else {
-                    setMessage({ type: 'success', text: '確認メールを送信しました。' });
+                if (data.user) {
+                    // プロフィールテーブルに作成
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .insert({
+                            id: data.user.id,
+                            display_name: displayName
+                        });
+
+                    if (profileError) {
+                        console.error('Profile Creation Error:', profileError);
+                    }
+
+                    if (data.session) {
+                        setMessage({ type: 'success', text: 'アカウント作成に成功しました。' });
+                    } else {
+                        setMessage({ type: 'success', text: '確認メールを送信しました。' });
+                    }
                 }
             } else {
                 const { data, error } = await supabase.auth.signInWithPassword({
@@ -69,6 +91,25 @@ export const Login = () => {
                 </div>
 
                 <form onSubmit={handleAuth} className="space-y-5">
+                    {isSignUp && (
+                        <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+                                User Name
+                            </label>
+                            <div className="relative group">
+                                <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                                <input
+                                    type="text"
+                                    value={displayName}
+                                    onChange={(e) => setDisplayName(e.target.value)}
+                                    required={isSignUp}
+                                    className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-slate-50/50 font-medium"
+                                    placeholder="your-prow"
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
                             Email Address
@@ -173,4 +214,5 @@ export const Login = () => {
         </div>
     );
 };
+
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Calendar } from 'lucide-react';
+import { ChevronRight, Calendar, User } from 'lucide-react';
 import { Card } from './ui/Card';
 
 interface HistoryViewProps {
@@ -40,13 +40,26 @@ export const HistoryView = ({ history, onViewDetail }: HistoryViewProps) => {
                                     <div className="flex items-center gap-2">
                                         <h3 className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">{log.content.brand_name}</h3>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        {log.content.brewery && (
-                                            <span className="text-[10px] text-slate-500 font-medium">{log.content.brewery}</span>
+                                    <div className="flex flex-col gap-1.5">
+                                        <div className="flex items-center gap-3">
+                                            {log.content.brewery && (
+                                                <span className="text-[10px] text-slate-500 font-medium">{log.content.brewery}</span>
+                                            )}
+                                            <span className="text-[10px] text-slate-300 font-medium italic">
+                                                {new Date(log.created_at).toLocaleDateString('ja-JP')}
+                                            </span>
+                                        </div>
+                                        {log.author_name ? (
+                                            <div className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-100 rounded-md text-slate-500 w-fit">
+                                                <User size={10} className="text-indigo-500" />
+                                                <span className="text-[9px] font-black uppercase tracking-tight">{log.author_name}</span>
+                                            </div>
+                                        ) : (
+                                            <div className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-50 rounded-md text-slate-300 w-fit">
+                                                <User size={10} />
+                                                <span className="text-[9px] font-bold uppercase tracking-tight">Unknown User</span>
+                                            </div>
                                         )}
-                                        <span className="text-[10px] text-slate-300 font-medium italic">
-                                            {new Date(log.created_at).toLocaleDateString('ja-JP')}
-                                        </span>
                                     </div>
                                 </div>
                                 <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
@@ -60,3 +73,4 @@ export const HistoryView = ({ history, onViewDetail }: HistoryViewProps) => {
         </main>
     );
 };
+
