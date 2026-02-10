@@ -1,14 +1,16 @@
 import React from 'react';
-import { Wine, History, Plus, LogOut } from 'lucide-react';
+import { Wine, History, Plus, LogOut, LogIn } from 'lucide-react';
 import { Button } from './ui/Button';
 
 interface HeaderProps {
     view: 'entry' | 'history';
     onToggleView: () => void;
     onLogout: () => void;
+    isLoggedIn: boolean;
+    onLoginClick: () => void;
 }
 
-export const Header = ({ view, onToggleView, onLogout }: HeaderProps) => (
+export const Header = ({ view, onToggleView, onLogout, isLoggedIn, onLoginClick }: HeaderProps) => (
     <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-indigo-50 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
             <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 p-2.5 rounded-2xl text-white shadow-lg shadow-indigo-100">
@@ -33,9 +35,16 @@ export const Header = ({ view, onToggleView, onLogout }: HeaderProps) => (
                     </div>
                 )}
             </Button>
-            <Button variant="ghost" onClick={onLogout} className="text-slate-400 hover:bg-red-50 hover:text-red-500 p-2">
-                <LogOut className="w-4 h-4" />
-            </Button>
+            {isLoggedIn ? (
+                <Button variant="ghost" onClick={onLogout} className="text-slate-400 hover:bg-red-50 hover:text-red-500 p-2">
+                    <LogOut className="w-4 h-4" />
+                </Button>
+            ) : (
+                <Button variant="ghost" onClick={onLoginClick} className="text-indigo-600 hover:bg-indigo-50 p-2">
+                    <LogIn className="w-4 h-4" />
+                </Button>
+            )}
         </div>
     </header>
 );
+
