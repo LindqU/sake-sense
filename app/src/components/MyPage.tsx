@@ -20,15 +20,24 @@ export const MyPage = ({ onBack }: MyPageProps) => {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error || !user) {
+                    setMessage({ type: 'error', text: 'ユーザー情報の取得に失敗しました。' });
+                    // 少し待ってから戻る、あるいはユーザーの操作を待つ
+                    setTimeout(() => onBack(), 2000);
+                    return;
+                }
                 setDisplayName(user.user_metadata.display_name || '');
                 setEmail(user.email || '');
+            } catch (error: unknown) {
+                setMessage({ type: 'error', text: '予期せぬエラーが発生しました。' });
+            } finally {
+                setInitialLoading(false);
             }
-            setInitialLoading(false);
         };
         fetchUser();
-    }, []);
+    }, [onBack]);
 
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,8 +51,9 @@ export const MyPage = ({ onBack }: MyPageProps) => {
         try {
             await updateProfile({ displayName });
             setMessage({ type: 'success', text: 'プロフィールを更新しました。' });
-        } catch (error: any) {
-            setMessage({ type: 'error', text: error.message || '更新に失敗しました。' });
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : '更新に失敗しました。';
+            setMessage({ type: 'error', text: msg });
         } finally {
             setLoading(false);
         }
@@ -62,8 +72,9 @@ export const MyPage = ({ onBack }: MyPageProps) => {
             await updatePassword({ password });
             setMessage({ type: 'success', text: 'パスワードを更新しました。' });
             setPassword('');
-        } catch (error: any) {
-            setMessage({ type: 'error', text: error.message || '更新に失敗しました。' });
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : '更新に失敗しました。';
+            setMessage({ type: 'error', text: msg });
         } finally {
             setLoading(false);
         }
@@ -109,8 +120,9 @@ export const MyPage = ({ onBack }: MyPageProps) => {
 
                     <form onSubmit={handleUpdateProfile} className="space-y-4">
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email</label>
+                            <label htmlFor="email" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email</label>
                             <input
+                                id="email"
                                 type="text"
                                 value={email}
                                 disabled
@@ -118,8 +130,9 @@ export const MyPage = ({ onBack }: MyPageProps) => {
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Display Name</label>
+                            <label htmlFor="displayName" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Display Name</label>
                             <input
+                                id="displayName"
                                 type="text"
                                 value={displayName}
                                 onChange={(e) => setDisplayName(e.target.value)}
@@ -128,6 +141,7 @@ export const MyPage = ({ onBack }: MyPageProps) => {
                             />
                         </div>
                         <Button
+                            type="submit"
                             disabled={loading}
                             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-14 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 transition-all active:scale-[0.98]"
                         >
@@ -148,8 +162,9 @@ export const MyPage = ({ onBack }: MyPageProps) => {
 
                     <form onSubmit={handleUpdatePassword} className="space-y-4">
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">New Password</label>
+                            <label htmlFor="password" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">New Password</label>
                             <input
+                                id="password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -158,6 +173,7 @@ export const MyPage = ({ onBack }: MyPageProps) => {
                             />
                         </div>
                         <Button
+                            type="submit"
                             disabled={loading || !password}
                             className="w-full bg-slate-800 hover:bg-slate-900 text-white h-14 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                         >
