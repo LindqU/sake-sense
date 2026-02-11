@@ -1,6 +1,31 @@
 'use server';
 
-import { supabase } from './supabase';
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
+
+// サーバークライアント作成用ヘルパー
+async function getSupabaseServerClient() {
+    const cookieStore = await cookies();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    return createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookies: {
+            getAll() {
+                return cookieStore.getAll();
+            },
+            setAll(cookiesToSet) {
+                try {
+                    cookiesToSet.forEach(({ name, value, options }) =>
+                        cookieStore.set(name, value, options)
+                    );
+                } catch {
+                    // サーバーコンポーネントから呼び出された場合は無視（Server Actionsからなら設定可能）
+                }
+            },
+        },
+    });
+}
 
 export async function signUpWithInvite(formData: {
     email: string;
@@ -9,8 +34,6 @@ export async function signUpWithInvite(formData: {
     inviteKey: string;
 }) {
     const { email, password, displayName, inviteKey } = formData;
-
-    // サーバーサイドで環境変数をチェック（クライアントには公開されない）
     const masterKey = process.env.INVITE_KEY;
 
     if (!masterKey) {
@@ -22,7 +45,7 @@ export async function signUpWithInvite(formData: {
         throw new Error('招待コードが正しくありません。');
     }
 
-    // サーバーサイドからサインアップを実行
+    const supabase = await getSupabaseServerClient();
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -32,6 +55,53 @@ export async function signUpWithInvite(formData: {
     });
 
     if (error) throw error;
-
     return { user: data.user, session: data.session };
+}
+
+export async function updateProfile(formData: { displayName: string }) {
+    const { displayName } = formData;
+    const supabase = await getSupabaseServerClient();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) throw new Error('ユーザーが見つかりません');
+
+    // 1. profiles テーブルを先に更新（失敗した場合はここで中断される）
+    const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ display_name: displayName })
+        .eq('id', user.id);
+
+    if (profileError) {
+        console.error('Profile update error:', profileError);
+        throw new Error('プロフィールの更新に失敗しました。');
+    }
+
+    // 2. Auth.users のメタデータを更新
+    const { error: updateAuthError } = await supabase.auth.updateUser({
+        data: { display_name: displayName }
+    });
+
+    if (updateAuthError) {
+        console.error('Auth update error:', updateAuthError);
+        // Auth側の更新に失敗しても、DB側は既に更新されているため、
+        // ユーザーには「一部更新に失敗したがDBは更新された」旨を伝えるか、
+        // あるいは成功として扱い、次回のログイン/リフレッシュで同期されることを期待する。
+        // ここでは不整合を避けるためエラーを投げるが、DB側が優先された状態になる。
+        throw new Error('認証情報の更新に失敗しました（プロフィールは更新されました）。');
+    }
+
+    return { success: true };
+}
+
+export async function updatePassword(formData: { password: string }) {
+    const { password } = formData;
+    const supabase = await getSupabaseServerClient();
+
+    const { error } = await supabase.auth.updateUser({
+        password: password
+    });
+
+    if (error) throw error;
+
+    return { success: true };
 }
