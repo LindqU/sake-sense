@@ -65,85 +65,94 @@ export const Login = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-50 p-4">
-            <Card className="w-full max-w-md p-8 shadow-2xl shadow-indigo-100/50 border-white/50 backdrop-blur-sm bg-white/90">
+        <div className="flex items-center justify-center min-h-screen bg-[#05051a] relative overflow-hidden p-4">
+            {/* Background elements for depth */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-900/20 rounded-full blur-[120px]" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-slate-800/20 rounded-full blur-[120px]" />
+
+            <Card className="w-full max-w-md p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-white/10 backdrop-blur-xl bg-white/5 relative z-10">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-3xl flex items-center justify-center mb-6 shadow-xl shadow-indigo-200 rotate-3 hover:rotate-0 transition-transform duration-300">
-                        {isSignUp ? <UserPlus className="text-white w-10 h-10" /> : <LogIn className="text-white w-10 h-10" />}
+                    <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-3xl flex items-center justify-center mb-6 shadow-xl shadow-indigo-500/20 rotate-3 hover:rotate-0 transition-all duration-500 group">
+                        {isSignUp ? (
+                            <UserPlus className="text-white w-10 h-10 group-hover:scale-110 transition-transform" />
+                        ) : (
+                            <LogIn className="text-white w-10 h-10 group-hover:translate-x-1 transition-transform" />
+                        )}
                     </div>
-                    <h1 className="text-3xl font-black text-slate-800 tracking-tight">Sake Sense</h1>
-                    <p className="text-slate-500 mt-2 font-medium">
-                        {isSignUp ? '新しいアカウントを作成' : '日本酒テイスティングログ'}
+                    <h1 className="text-4xl font-black text-white tracking-tighter mb-2">Sake Sense</h1>
+                    <div className="h-1 w-12 bg-indigo-500 rounded-full mb-4"></div>
+                    <p className="text-indigo-100/70 font-medium text-center">
+                        {isSignUp ? '新しいアカウントを作成して、あなたの利き酒ログを始めましょう' : '至高の日本酒体験を記録する'}
                     </p>
                 </div>
 
-                <form onSubmit={handleAuth} className="space-y-5">
+                <form onSubmit={handleAuth} className="space-y-6">
                     {isSignUp && (
-                        <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+                        <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
+                            <label className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em] ml-1">
                                 User Name
                             </label>
                             <div className="relative group">
-                                <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                                <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300/50 group-focus-within:text-indigo-400 transition-colors" />
                                 <input
                                     type="text"
                                     value={displayName}
                                     onChange={(e) => setDisplayName(e.target.value)}
                                     required={isSignUp}
-                                    className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-slate-50/50 font-medium"
-                                    placeholder="your-prow"
+                                    className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all bg-white/5 text-white placeholder:text-slate-500 font-medium"
+                                    placeholder="表示名（例：sake_lover）"
                                 />
                             </div>
                         </div>
                     )}
 
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+                        <label className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em] ml-1">
                             Email Address
                         </label>
                         <div className="relative group">
-                            <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                            <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300/50 group-focus-within:text-indigo-400 transition-colors" />
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-slate-50/50 font-medium"
-                                placeholder="name@example.com"
+                                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all bg-white/5 text-white placeholder:text-slate-500 font-medium"
+                                placeholder="mail@example.com"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+                        <label className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em] ml-1">
                             Password
                         </label>
                         <div className="relative group">
-                            <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                            <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300/50 group-focus-within:text-indigo-400 transition-colors" />
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-slate-50/50 font-medium"
+                                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all bg-white/5 text-white placeholder:text-slate-500 font-medium"
                                 placeholder="••••••••"
                             />
                         </div>
                     </div>
 
                     {isSignUp && (
-                        <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider ml-1">
+                        <div className="space-y-2 animate-in fade-in slide-in-from-top-6 duration-700">
+                            <label className="text-[10px] font-bold text-amber-400 uppercase tracking-[0.2em] ml-1">
                                 Invitation Key
                             </label>
                             <div className="relative group">
-                                <Key size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400 group-focus-within:text-indigo-600 transition-colors" />
+                                <Key size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-400/50 group-focus-within:text-amber-400 transition-colors" />
                                 <input
                                     type="text"
                                     value={inviteKey}
                                     onChange={(e) => setInviteKey(e.target.value)}
                                     required={isSignUp}
-                                    className="w-full pl-12 pr-4 py-4 rounded-2xl border border-indigo-100 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-indigo-50/30 font-bold placeholder:font-normal"
+                                    className="w-full pl-12 pr-4 py-4 rounded-2xl border border-amber-500/20 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all bg-amber-500/5 text-amber-50 placeholder:text-amber-900/50 font-bold tracking-widest"
                                     placeholder="招待コードを入力"
                                 />
                             </div>
@@ -151,7 +160,7 @@ export const Login = () => {
                     )}
 
                     {message && (
-                        <div className={`p-4 rounded-2xl text-sm font-medium ${message.type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                        <div className={`p-4 rounded-2xl text-sm font-bold border ${message.type === 'error' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                             } animate-in zoom-in-95 duration-200`}>
                             {message.text}
                         </div>
@@ -160,39 +169,39 @@ export const Login = () => {
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-5 text-lg font-bold rounded-2xl shadow-lg shadow-indigo-200 mt-4 transition-transform active:scale-[0.98]"
+                        className="w-full py-6 text-lg font-black rounded-2xl shadow-xl shadow-indigo-500/20 mt-4 transition-all active:scale-[0.98] bg-indigo-600 hover:bg-indigo-500 text-white border-b-4 border-indigo-800 hover:border-indigo-700"
                     >
                         {loading ? (
                             <Loader2 className="animate-spin" />
                         ) : isSignUp ? (
                             <span className="flex items-center gap-2 justify-center">
-                                <UserPlus size={20} />
-                                新規登録を完了する
+                                <UserPlus size={22} />
+                                アカウントを作成
                             </span>
                         ) : (
                             <span className="flex items-center gap-2 justify-center">
-                                <LogIn size={20} />
+                                <LogIn size={22} />
                                 ログイン
                             </span>
                         )}
                     </Button>
                 </form>
 
-                <div className="mt-8 text-center pt-6 border-t border-slate-100">
+                <div className="mt-10 text-center pt-8 border-t border-white/5">
                     <button
                         onClick={() => {
                             setIsSignUp(!isSignUp);
                             setMessage(null);
                         }}
-                        className="text-slate-500 hover:text-indigo-600 font-bold text-sm transition-colors group"
+                        className="text-indigo-200/50 hover:text-white font-bold text-sm transition-all group flex items-center justify-center gap-2 mx-auto"
                     >
                         {isSignUp ? (
                             <>
-                                すでにアカウントをお持ちですか？ <span className="text-indigo-600 group-hover:underline">ログイン</span>
+                                すでにアカウントをお持ちですか？ <span className="text-indigo-400 group-hover:text-indigo-300 underline decoration-indigo-400/30 underline-offset-4">ログイン</span>
                             </>
                         ) : (
                             <>
-                                はじめての方はこちら <span className="text-indigo-600 group-hover:underline">新規登録 (招待制)</span>
+                                初めてのご利用ですか？ <span className="text-indigo-400 group-hover:text-indigo-300 underline decoration-indigo-400/30 underline-offset-4">新規登録はこちら</span>
                             </>
                         )}
                     </button>
