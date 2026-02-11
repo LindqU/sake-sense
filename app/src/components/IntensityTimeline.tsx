@@ -92,18 +92,34 @@ export const IntensityTimeline = ({ points, onPointsChange, disabled }: Intensit
                     <RotateCcw className="w-4 h-4" />
                 </Button>
             </div>
-            <div className="relative aspect-[4/3] w-full border-2 border-slate-50 rounded-2xl bg-slate-50/30 overflow-hidden touch-none">
-                <canvas
-                    ref={canvasRef}
-                    width={400} height={300}
-                    onMouseDown={handleDrawStart}
-                    onMouseMove={handleDrawMove}
-                    onMouseUp={() => setIsDrawing(false)}
-                    onTouchStart={handleDrawStart}
-                    onTouchMove={handleDrawMove}
-                    onTouchEnd={() => setIsDrawing(false)}
-                    className="w-full h-full"
-                />
+
+            <div className="flex gap-2">
+                {/* 縦軸ラベル */}
+                <div className="flex flex-col justify-between py-1 text-[10px] font-medium text-slate-400 select-none">
+                    <span>強</span>
+                    <span>弱</span>
+                </div>
+
+                <div className="flex-1">
+                    <div className="relative aspect-[4/3] w-full border-2 border-slate-50 rounded-2xl bg-slate-50/30 overflow-hidden touch-none">
+                        <canvas
+                            ref={canvasRef}
+                            width={400} height={300}
+                            onMouseDown={handleDrawStart}
+                            onMouseMove={handleDrawMove}
+                            onMouseUp={() => setIsDrawing(false)}
+                            onTouchStart={handleDrawStart}
+                            onTouchMove={handleDrawMove}
+                            onTouchEnd={() => setIsDrawing(false)}
+                            className="w-full h-full"
+                        />
+                    </div>
+                    {/* 横軸ラベル */}
+                    <div className="flex justify-between mt-2 px-1 text-[10px] font-medium text-slate-400 select-none">
+                        <span>含んだ瞬間</span>
+                        <span>余韻</span>
+                    </div>
+                </div>
             </div>
         </Card>
     );
