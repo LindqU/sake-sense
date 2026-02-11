@@ -8,13 +8,14 @@ import { Header } from '@/components/Header';
 import { EntryView } from '@/components/EntryView';
 import { HistoryView } from '@/components/HistoryView';
 import { Login } from '@/components/Login';
+import { MyPage } from '@/components/MyPage';
 import { Session } from '@supabase/supabase-js';
 import { Loader2 } from 'lucide-react';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [view, setView] = useState<'entry' | 'history'>('entry');
+  const [view, setView] = useState<'entry' | 'history' | 'mypage'>('entry');
   const [showLogin, setShowLogin] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [selectedLogUserId, setSelectedLogUserId] = useState<string | null>(null);
@@ -111,9 +112,12 @@ export default function App() {
         onLogout={handleLogout}
         isLoggedIn={!!session}
         onLoginClick={() => setShowLogin(true)}
+        onClickMyPage={() => setView('mypage')}
       />
 
-      {view === 'entry' ? (
+      {view === 'mypage' ? (
+        <MyPage onBack={() => setView('history')} />
+      ) : view === 'entry' ? (
         <EntryView
           {...form}
           isLoggedIn={!!session}

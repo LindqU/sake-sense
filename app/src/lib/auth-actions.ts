@@ -35,3 +35,38 @@ export async function signUpWithInvite(formData: {
 
     return { user: data.user, session: data.session };
 }
+
+export async function updateProfile(formData: { displayName: string }) {
+    const { displayName } = formData;
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) throw new Error('ユーザーが見つかりません');
+
+    // Auth.users のメタデータを更新
+    const { error: updateAuthError } = await supabase.auth.updateUser({
+        data: { display_name: displayName }
+    });
+    if (updateAuthError) throw updateAuthError;
+
+    // profiles テーブルを更新
+    const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ display_name: displayName })
+        .eq('id', user.id);
+
+    if (profileError) throw profileError;
+
+    return { success: true };
+}
+
+export async function updatePassword(formData: { password: string }) {
+    const { password } = formData;
+
+    const { error } = await supabase.auth.updateUser({
+        password: password
+    });
+
+    if (error) throw error;
+
+    return { success: true };
+}
