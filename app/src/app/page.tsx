@@ -59,6 +59,8 @@ export default function App() {
   const toggleView = () => {
     if (view === 'entry') {
       setView('history');
+    } else if (view === 'mypage') {
+      setView('history');
     } else {
       // New Log
       form.resetForm();

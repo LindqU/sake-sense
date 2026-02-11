@@ -9,5 +9,9 @@
 - [x] `auth-actions.ts` の修正 [x]
     - [x] `createServerClient` への変更（認証コンテキストの対応）
     - [x] `updateProfile` のアトミシティ（不整合防止）対応
-- [ ] 動作確認と検証 [/]
-- [ ] ウォークスルーの作成 [/]
+- [x] Minor指摘事項の修正 [x]
+    - [x] `app/page.tsx`: `toggleView` のロジック修正
+    - [x] `implementation_plan.md`: conversationalな記述の削除と相対パスへの変更
+    - [x] `task.md`: Markdownの見出し周りのスタイル修正
+- [x] 動作確認と検証 [x]
+- [x] ウォークスルーの作成 [x]
