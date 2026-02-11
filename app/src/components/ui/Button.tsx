@@ -1,4 +1,4 @@
-import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface ButtonProps {
     children: React.ReactNode;
@@ -30,7 +30,7 @@ export const Button = ({
             type={type}
             onClick={onClick}
             disabled={disabled}
-            className={`${base} ${variants[variant]} ${className}`}
+            className={cn(base, variants[variant], className)}
         >
             {children}
         </button>

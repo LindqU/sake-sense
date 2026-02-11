@@ -89,12 +89,13 @@ export const Login = () => {
                 <form onSubmit={handleAuth} className="space-y-6">
                     {isSignUp && (
                         <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
-                            <label className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em] ml-1">
+                            <label htmlFor="displayName" className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em] ml-1">
                                 User Name
                             </label>
                             <div className="relative group">
                                 <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300/50 group-focus-within:text-indigo-400 transition-colors" />
                                 <input
+                                    id="displayName"
                                     type="text"
                                     value={displayName}
                                     onChange={(e) => setDisplayName(e.target.value)}
@@ -107,12 +108,13 @@ export const Login = () => {
                     )}
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em] ml-1">
+                        <label htmlFor="email" className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em] ml-1">
                             Email Address
                         </label>
                         <div className="relative group">
                             <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300/50 group-focus-within:text-indigo-400 transition-colors" />
                             <input
+                                id="email"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -124,12 +126,13 @@ export const Login = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em] ml-1">
+                        <label htmlFor="password" className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em] ml-1">
                             Password
                         </label>
                         <div className="relative group">
                             <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300/50 group-focus-within:text-indigo-400 transition-colors" />
                             <input
+                                id="password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -142,12 +145,13 @@ export const Login = () => {
 
                     {isSignUp && (
                         <div className="space-y-2 animate-in fade-in slide-in-from-top-6 duration-700">
-                            <label className="text-[10px] font-bold text-amber-400 uppercase tracking-[0.2em] ml-1">
+                            <label htmlFor="inviteKey" className="text-[10px] font-bold text-amber-400 uppercase tracking-[0.2em] ml-1">
                                 Invitation Key
                             </label>
                             <div className="relative group">
                                 <Key size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-400/50 group-focus-within:text-amber-400 transition-colors" />
                                 <input
+                                    id="inviteKey"
                                     type="text"
                                     value={inviteKey}
                                     onChange={(e) => setInviteKey(e.target.value)}
@@ -189,6 +193,7 @@ export const Login = () => {
 
                 <div className="mt-10 text-center pt-8 border-t border-white/5">
                     <button
+                        type="button"
                         onClick={() => {
                             setIsSignUp(!isSignUp);
                             setMessage(null);
