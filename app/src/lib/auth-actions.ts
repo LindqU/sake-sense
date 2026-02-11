@@ -65,19 +65,30 @@ export async function updateProfile(formData: { displayName: string }) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error('ユーザーが見つかりません');
 
-    // Auth.users のメタデータを更新
-    const { error: updateAuthError } = await supabase.auth.updateUser({
-        data: { display_name: displayName }
-    });
-    if (updateAuthError) throw updateAuthError;
-
-    // profiles テーブルを更新
+    // 1. profiles テーブルを先に更新（失敗した場合はここで中断される）
     const { error: profileError } = await supabase
         .from('profiles')
         .update({ display_name: displayName })
         .eq('id', user.id);
 
-    if (profileError) throw profileError;
+    if (profileError) {
+        console.error('Profile update error:', profileError);
+        throw new Error('プロフィールの更新に失敗しました。');
+    }
+
+    // 2. Auth.users のメタデータを更新
+    const { error: updateAuthError } = await supabase.auth.updateUser({
+        data: { display_name: displayName }
+    });
+
+    if (updateAuthError) {
+        console.error('Auth update error:', updateAuthError);
+        // Auth側の更新に失敗しても、DB側は既に更新されているため、
+        // ユーザーには「一部更新に失敗したがDBは更新された」旨を伝えるか、
+        // あるいは成功として扱い、次回のログイン/リフレッシュで同期されることを期待する。
+        // ここでは不整合を避けるためエラーを投げるが、DB側が優先された状態になる。
+        throw new Error('認証情報の更新に失敗しました（プロフィールは更新されました）。');
+    }
 
     return { success: true };
 }
